@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Excel Consolidator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+  <header><a href="/" class="brand"><span class="mark">∑</span> Excel Consolidator</a><span class="tag">THE ESSENTIALS · V1</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">LESS COPYING. MORE CLARITY.</p><h1>Many spreadsheets.<br>One clear picture.</h1><p class="lede">Bring your Excel files together in a single workbook.<br>Upload, combine, and get back to the work that matters.</p></section>
+    <section class="workspace" aria-label="Consolidate your files">
+      <form id="form">
+        <div class="section-heading"><span class="step">01</span><div><h2>Add your workbooks</h2><p>Choose 2–20 .xlsx files, up to 25 MB in total.</p></div></div>
+        <label class="upload" for="files"><span class="upload-icon" aria-hidden="true">↑</span><strong>Choose Excel files</strong><span>Select multiple files from your computer</span><input id="files" name="files" type="file" accept=".xlsx" multiple required aria-describedby="rules"></label>
+        <ul id="file-list" aria-label="Selected files"></ul>
+        <div class="rules" id="rules"><strong>A little preparation goes a long way</strong><p>We use the first worksheet, with headings in row 1. Every file needs the same headings; column order can differ. Save formulas as values first.</p><p>Duplicate rows are kept. Cleaning and data validation are coming later.</p></div>
+        <button id="submit" type="submit" disabled>Consolidate files <span aria-hidden="true">→</span></button>
+      </form>
+      <section id="result" hidden aria-labelledby="result-title"><span class="step">02</span><h2 id="result-title">Your workbook is ready</h2><p id="summary"></p><a id="download" class="download" download="consolidated.xlsx">Download Excel file ↓</a></section>
+      <p id="status" role="status" aria-live="polite"></p>
+    </section>
+    <p class="footnote">Files are processed for this request and are not saved to an upload library.</p>
+  </main>
+  <footer><span>Simple tools. Less busywork.</span><span>EXCEL CONSOLIDATOR</span></footer>
+</body>
+</html>
