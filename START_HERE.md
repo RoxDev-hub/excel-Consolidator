@@ -36,3 +36,13 @@ The launcher starts the web adapter. The web adapter calls the Excel module.
 Neither the frontend nor the Excel module manages installation or startup.
 
 See [WEB_APP.md](WEB_APP.md) for developer commands and supported workbook formats.
+
+## Compare or stop
+
+After consolidation, **Verify result** lets you select an expected workbook and
+see differences without moving the downloaded file. The current result is used
+automatically. Comparison ignores ordering and counts duplicates separately.
+
+To finish, download your result and click **Stop app**, then confirm. This stops
+the local server and lets the launcher close. Close the browser tab yourself.
+The button is available only with the local launcher and stops all its tabs.

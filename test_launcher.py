@@ -2,6 +2,7 @@
 from io import StringIO
 from pathlib import Path
 import queue
+import re
 import subprocess
 import sys
 import tempfile
@@ -76,9 +77,19 @@ class SetupTests(unittest.TestCase):
             opener.assert_called_once_with(url)
             client = urllib.request.build_opener(urllib.request.ProxyHandler({}))
             with client.open(url, timeout=5) as response:
-                self.assertIn(b'Excel Consolidator', response.read())
+                page = response.read().decode()
+                self.assertIn('Excel Consolidator', page)
+            token = re.search(r'name="local-stop-token" content="([^"]+)"', page).group(1)
+            request = urllib.request.Request(url + 'stop', data=b'', method='POST',
+                headers={'Origin': url.rstrip('/'), 'X-Stop-Token': token})
+            with client.open(request, timeout=5) as response:
+                self.assertIn(b'shutting down', response.read())
+            self.assertEqual(process.wait(timeout=10), 0)
+            with self.assertRaises(OSError):
+                client.open(url, timeout=1)
         finally:
-            process.terminate()
+            if process.poll() is None:
+                process.terminate()
             process.wait(timeout=10)
             reader.join(timeout=5)
             process.stdout.close()

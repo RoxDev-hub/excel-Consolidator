@@ -47,3 +47,17 @@ main{padding:0 16px}
 .lede br{display:none}
 footer{padding:24px 20px;gap:20px;font-size:9px}
 }
+.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.actions button,.local-controls button{width:auto;display:inline-block}
+.secondary{background:#edf3ed;color:#245c48;border:1px solid #bdccbf}
+.secondary:hover{background:#dce9dc}
+#verification{border-top:1px solid #dce3d9;margin-top:24px;padding-top:12px;font-size:14px;line-height:1.6}
+.comparison-rules{font-size:12px;color:#64726b}
+#verify-form{display:grid;gap:12px}
+#comparison-status{overflow-wrap:anywhere}
+.local-controls{max-width:660px;margin:0 auto 30px;text-align:center;font-size:12px;color:#64726b}
+.table-scroll{overflow:auto;max-height:300px}
+table{border-collapse:collapse;font-size:12px;width:100%}
+th,td{border:1px solid #dce3d9;padding:8px;text-align:left;overflow-wrap:anywhere;min-width:80px}
+caption{text-align:left;font-weight:600}
+th{background:#f5f6f1}

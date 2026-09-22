@@ -6,6 +6,8 @@
   <title>Excel Consolidator</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='verification.js') }}"></script>
+  {% if stop_token %}<meta name="local-stop-token" content="{{ stop_token }}"><script defer src="{{ url_for('static', filename='lifecycle.js') }}"></script>{% endif %}
 </head>
 <body>
   <header><a href="/" class="brand"><span class="mark">∑</span> Excel Consolidator</a><span class="tag">THE ESSENTIALS · V1</span></header>
@@ -19,10 +21,19 @@
         <div class="rules" id="rules"><strong>A little preparation goes a long way</strong><p>We use the first worksheet, with headings in row 1. Every file needs the same headings; column order can differ. Save formulas as values first.</p><p>Duplicate rows are kept. Cleaning and data validation are coming later.</p></div>
         <button id="submit" type="submit" disabled>Consolidate files <span aria-hidden="true">→</span></button>
       </form>
-      <section id="result" hidden aria-labelledby="result-title"><span class="step">02</span><h2 id="result-title">Your workbook is ready</h2><p id="summary"></p><a id="download" class="download" download="consolidated.xlsx">Download Excel file ↓</a></section>
+      <section id="result" hidden aria-labelledby="result-title"><span class="step">02</span><h2 id="result-title">Your workbook is ready</h2><p id="summary"></p><div class="actions"><a id="download" class="download" download="consolidated.xlsx">Download Excel file ↓</a><button id="verify-toggle" type="button" class="secondary" aria-expanded="false" aria-controls="verification">Verify result</button></div>
+        <section id="verification" hidden aria-labelledby="verify-title">
+          <h3 id="verify-title">Compare with an expected workbook</h3>
+          <p>Choose the workbook containing the result you expect. We use your current consolidated result automatically.</p>
+          <p class="comparison-rules">Row and column order are ignored. Duplicate counts matter. Values, spaces, case and types must match; numeric 1 and 1.0 match. Formatting is ignored. First worksheet only, with headers in row 1 and no formulas.</p>
+          <form id="verify-form"><label for="expected">Expected result (.xlsx)</label><input id="expected" type="file" accept=".xlsx" required><button id="compare-button" type="submit">Compare results</button></form>
+          <p id="comparison-status" role="status" aria-live="polite"></p><div id="comparison-details"></div>
+        </section>
+      </section>
       <p id="status" role="status" aria-live="polite"></p>
     </section>
     <p class="footnote">Files are processed for this request and are not saved to an upload library.</p>
+    {% if stop_token %}<section class="local-controls" aria-label="Local app controls"><button id="stop-app" type="button" class="secondary">Stop app</button><p id="stop-status" role="status" aria-live="polite">Stops the local server and launcher. Download your result before stopping.</p></section>{% endif %}
   </main>
   <footer><span>Simple tools. Less busywork.</span><span>EXCEL CONSOLIDATOR</span></footer>
 </body>

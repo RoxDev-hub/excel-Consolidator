@@ -5,6 +5,7 @@ No frontend rendering or workbook processing belongs in this module.
 import argparse
 import hashlib
 import os
+import secrets
 from pathlib import Path
 import subprocess
 import sys
@@ -66,16 +67,28 @@ def serve(open_browser=True):
     server = create_server(app, host='127.0.0.1', port=0)
     url = f'http://127.0.0.1:{server.effective_port}/'
     stop = threading.Event()
+    app.config.update(LOCAL_STOP_TOKEN=secrets.token_urlsafe(32),
+                      LOCAL_ORIGIN=url.rstrip('/'), LOCAL_STOP_CALLBACK=stop.set)
     print(f'Excel Consolidator is available at {url}', flush=True)
     print('Keep this window open while using the app.', flush=True)
     print('Close this window or press Ctrl+C to stop Excel Consolidator.', flush=True)
     if open_browser:
         threading.Thread(target=open_when_ready, args=(url, stop), daemon=True).start()
     try:
-        server.run()
+        # The launcher owns shutdown, not the web or Excel modules.
+        while not stop.is_set():
+            server.asyncore.loop(timeout=0.2, map=server._map, count=1)
+        print('Stopping Excel Consolidator...', flush=True)
     finally:
         stop.set()
+        server.task_dispatcher.shutdown()
+        # Flush the shutdown response before closing connections.
+        for _ in range(3):
+            server.asyncore.loop(timeout=0.1, map=server._map, count=1)
         server.close()
+        server.asyncore.close_all(map=server._map)
+        for key in ('LOCAL_STOP_TOKEN', 'LOCAL_ORIGIN', 'LOCAL_STOP_CALLBACK'):
+            app.config.pop(key, None)
 
 
 def main():
