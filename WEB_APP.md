@@ -5,6 +5,12 @@ workbooks, consolidate, review file/row counts, and download one Excel file.
 
 ## Run locally (PowerShell)
 
+**For the easiest Windows launch, double-click `Start Excel Consolidator.bat`.**
+See [START_HERE.md](START_HERE.md) for first-time setup and the separation of
+launcher, frontend, web adapter, and Excel processing. The launcher owns a
+separate `.launcher-venv` and opens an available local port automatically.
+The commands below are an alternative for developers.
+
 From the repository folder, with Python 3.12 or newer installed:
 
 ```powershell
@@ -41,7 +47,7 @@ The browser holds the download until files are reselected or the page is closed.
 ## Checks
 
 ```powershell
-.\.venv\Scripts\python.exe -m unittest -v test_web
+.\.venv\Scripts\python.exe -m unittest -v test_web test_launcher
 ```
 
 Tests exercise column alignment, duplicates, empty rows/files, invalid inputs,
