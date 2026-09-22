@@ -6,6 +6,7 @@ const result = document.querySelector('#result');
 let downloadUrl;
 
 function clearResult() {
+  window.dispatchEvent(new Event('result-cleared'));
   result.hidden = true;
   if (downloadUrl) URL.revokeObjectURL(downloadUrl);
   downloadUrl = undefined;
@@ -35,6 +36,7 @@ form.addEventListener('submit', async (event) => {
     return;
   }
   const data = new FormData(form);
+  window.dispatchEvent(new CustomEvent('app-busy', { detail: { operation: 'consolidate', active: true } }));
   button.disabled = true;
   input.disabled = true;
   status.textContent = 'Combining your workbooks…';
@@ -44,7 +46,9 @@ form.addEventListener('submit', async (event) => {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.error || 'The request failed. Please try again.');
     }
-    downloadUrl = URL.createObjectURL(await response.blob());
+    const workbook = await response.blob();
+    downloadUrl = URL.createObjectURL(workbook);
+    window.dispatchEvent(new CustomEvent('result-ready', { detail: workbook }));
     document.querySelector('#download').href = downloadUrl;
     document.querySelector('#summary').textContent = `${response.headers.get('X-File-Count')} files processed · ${Number(response.headers.get('X-Row-Count')).toLocaleString()} rows combined`;
     result.hidden = false;
@@ -53,6 +57,7 @@ form.addEventListener('submit', async (event) => {
     status.className = 'error';
     status.textContent = error.message || 'Could not connect. Please try again.';
   } finally {
+    window.dispatchEvent(new CustomEvent('app-busy', { detail: { operation: 'consolidate', active: false } }));
     input.disabled = false;
     button.disabled = input.files.length < 2;
   }

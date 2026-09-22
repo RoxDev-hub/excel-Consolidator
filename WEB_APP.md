@@ -67,3 +67,45 @@ Use HTTPS through the host and configure request/time/concurrency limits before
 public launch. The local Flask development server is for local review.
 Future steps can add validation, cleaning and duplicate policies to the Python
 module without mixing those rules into the page.
+
+## Verify a result
+
+After consolidation, click **Verify result** next to Download, choose an expected
+`.xlsx` workbook, and click **Compare results**. The current consolidated workbook
+is retained in browser memory and sent with the expected file. Nothing needs to
+be moved out of Downloads. Reselecting source files clears verification and its
+retained result. Choosing a different expected file clears the old report.
+
+Comparison ignores row and column order, but counts duplicate occurrences.
+Headings, text, whitespace, and value types must match exactly. Numbers such as
+1 and 1.0 match; text "1" is different from numeric 1. No rounding tolerance or
+cleaning is applied. Formatting is ignored. Both files use the first worksheet,
+headers on row 1, and no formulas. Blank rows are skipped. Limits: 25 MB total
+upload, 100 MB total unpacked content, 100,000 rows per file, 200 columns.
+
+The report shows matching, missing, and extra row counts plus up to 10 distinct
+example rows in each direction. Missing means present in expected but absent
+from the consolidated result. Changed rows appear as one missing and one extra;
+there is no record ID matching. Column mismatches are listed and stop row
+comparison. Verification reports differences without changing either workbook.
+
+## Stop the local app
+
+When started through the launcher, **Stop app** asks for confirmation and requests
+server shutdown, which lets the launcher exit. Download your workbook first.
+The browser tab stays open with a shutdown message; you can close it yourself.
+The button is disabled while this page is processing files. Stopping affects all
+tabs connected to that launcher instance. The button and shutdown capability are
+absent when running `python app.py` or a hosted WSGI server directly.
+
+## Code responsibilities
+
+- `launcher.py`: server lifecycle, local-only shutdown capability, setup and browser opening.
+- `static/app.js`, `static/verification.js`, `static/lifecycle.js`: frontend interactions.
+- `app.py`: HTTP adapter only; calls the comparison module or launcher callback.
+- `workbook_reader.py`: shared input rules used by consolidation and comparison.
+- `consolidator.py`: combining and exporting Excel data.
+- `comparison.py`: comparing workbook values and duplicate counts.
+
+Run all checks with `python -m unittest -v test_web test_launcher test_comparison`
+using your project interpreter.
